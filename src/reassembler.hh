@@ -2,6 +2,9 @@
 
 #include "byte_stream.hh"
 
+#include <map>
+#include <optional>
+
 class Reassembler
 {
 public:
@@ -42,4 +45,22 @@ public:
 
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
+  std::map<uint64_t, std::string> pending_substr_ {};
+
+  uint64_t bytes_pending_ {};
+
+  uint64_t next_index_ {};
+
+  std::optional<uint64_t> total_pushed_len_ { std::nullopt };
+
+private:
+  void insert_or_store( uint64_t first_index, std::string data );
+
+  void write_stored_str();
+
+  void write( std::string data );
+
+  void store( uint64_t first_index, std::string data );
+
+  uint64_t truncate_head( uint64_t old_index, std::string& data );
 };
